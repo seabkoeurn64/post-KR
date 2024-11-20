@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KR POST</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f8bbd0, #f48fb1);
+      font-family: 'Khmer OS', Arial, sans-serif;
+      color: #333;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .header {
+      background: linear-gradient(90deg, #ec407a, #d81b60);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      width: 100%;
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .section {
+      background: linear-gradient(135deg, #f06292, #e91e63);
+      color: white;
+      padding: 15px;
+      width: 90%;
+      margin: 10px 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      font-size: 1.2em;
+    }
+
+    .section label {
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+    }
+
+    .buttons button {
+      background: linear-gradient(90deg, #f06292, #ec407a);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .buttons button:hover {
+      transform: translateY(-5px) scale(1.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .buttons button:focus {
+      outline: none;
+      box-shadow: 0 0 5px 2px rgba(255, 105, 135, 0.8);
+    }
+
+    footer {
+      margin-top: 20px;
+      background: linear-gradient(90deg, #ec407a, #d81b60);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 100%;
+    }
+
+    #status {
+      font-size: 1.2em;
+      margin-top: 20px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Facebook Post Manager</div>
+
+    <div class="section">
+      <p id="fb-status">Checking Facebook connection...</p>
+      <button id="connect-btn" style="display:none;">ភ្ជាប់អាខោន</button>
+    </div>
+
+    <div class="section">
+      <label for="primary-text">Primary Text:</label>
+      <textarea id="primary-text" rows="4" placeholder="សរសេរពាក្យពេចន៍នៅទីនេះ..." style="width: 100%;"></textarea>
+    </div>
+
+    <div class="section">
+      <label for="schedule-time">Schedule Time:</label>
+      <input type="datetime-local" id="schedule-time" style="width: 100%; padding: 10px; border-radius: 8px;">
+    </div>
+
+    <div class="section">
+      <div id="status">Waiting for backend status...</div>
+    </div>
+
+    <div class="section">
+      <div class="buttons">
+        <button id="post-btn">📤 Post</button>
+      </div>
+    </div>
+
+    <footer>សម្របសម្រួលដោយ Koeurn64</footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const fbStatus = document.getElementById('fb-status');
+      const connectBtn = document.getElementById('connect-btn');
+      const postBtn = document.getElementById('post-btn');
+      const statusDiv = document.getElementById('status');
+
+      const isConnected = false;
+
+      if (isConnected) {
+        fbStatus.textContent = "អ្នកប្រើប្រាស់: Sample User";
+      } else {
+        fbStatus.textContent = "អ្នកប្រើប្រាស់: ភ្ជាប់អាខោន";
+        connectBtn.style.display = "inline-block";
+      }
+
+      connectBtn.addEventListener('click', () => alert('Connecting to Facebook...'));
+
+      // Fetch request to backend API
+      fetch('/api/status')
+        .then(response => response.json()) // Convert response to JSON
+        .then(data => {
+          console.log(data.message);  // Log the message from backend
+          statusDiv.innerText = data.message;  // Display it on the page
+        })
+        .catch(error => {
+          console.error('Error:', error);  // Log any errors that occur
+          statusDiv.innerText = 'Error connecting to backend';
+        });
+
+      postBtn.addEventListener('click', async () => {
+        try {
+          postBtn.disabled = true;
+          postBtn.textContent = "Posting...";
+          await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate post delay
+          postBtn.textContent = "Post";
+          alert('Your post has been successfully scheduled!');
+        } catch (error) {
+          alert('Error posting: ' + error.message);
+        } finally {
+          postBtn.disabled = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
